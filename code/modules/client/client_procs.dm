@@ -96,6 +96,11 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		asset_cache_preload_data(href_list["asset_cache_preload_data"])
 		return
 
+	//byond bug ID:2694120
+	if(href_list["reset_macros"])
+		reset_macros(TRUE)
+		return
+
 	// Admin PM
 	if(href_list["priv_msg"])
 		cmd_admin_pm(href_list["priv_msg"],null)
@@ -1055,6 +1060,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(!D?.key_bindings)
 		return
 	movement_keys = list()
+	var/list/communication_hotkeys = list()
 	for(var/kb_name in D.key_bindings)
 		for(var/key in D.key_bindings[kb_name])
 			switch(kb_name)
@@ -1069,15 +1075,24 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 				if(SAY_CHANNEL)
 					var/say = tgui_say_create_open_command(SAY_CHANNEL)
 					winset(src, "default-[REF(key)]", "parent=default;name=[key];command=[say]")
+					communication_hotkeys += key
 				if(RADIO_CHANNEL)
 					var/radio = tgui_say_create_open_command(RADIO_CHANNEL)
 					winset(src, "default-[REF(key)]", "parent=default;name=[key];command=[radio]")
+					communication_hotkeys += key
 				if(ME_CHANNEL)
 					var/me = tgui_say_create_open_command(ME_CHANNEL)
 					winset(src, "default-[REF(key)]", "parent=default;name=[key];command=[me]")
+					communication_hotkeys += key
 				if(OOC_CHANNEL)
 					var/ooc = tgui_say_create_open_command(OOC_CHANNEL)
 					winset(src, "default-[REF(key)]", "parent=default;name=[key];command=[ooc]")
+					communication_hotkeys += key
+	// winget() does not work for F1 and F2
+	for(var/key in communication_hotkeys)
+		if(!(key in list("F1","F2")) && !winget(src, "default-\ref[key]", "command"))
+			to_chat(src, span_warning("You probably entered the game with a different keyboard layout.\n<a href='?src=\ref[src];reset_macros=1'>Please switch to the English layout and click here to fix the communication hotkeys.</a>"))
+			break
 
 /client/proc/change_view(new_size)
 	if (isnull(new_size))

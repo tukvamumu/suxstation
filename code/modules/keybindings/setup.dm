@@ -39,3 +39,16 @@
 			window.set_mouse_macro()
 
 	update_special_keybinds()
+
+// byond bug ID:2694120
+/client/verb/reset_macros_wrapper()
+	set name = "Fix Keybindings"
+	set category = "OOC"
+	reset_macros()
+
+/client/proc/reset_macros(skip = FALSE)
+	if(!skip)
+		if(tgui_alert(src, "Change your keyboard layout to ENG and press OK",, list("OK","Cancel"))!="OK")
+			return
+		to_chat(src, span_notice("Keybindings should be fixed now."))
+	set_macros()
