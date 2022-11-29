@@ -10,6 +10,9 @@
 #Ignore byond config folder.
 /cfg/**/*
 
+#Ignore configs
+/config/**/*
+
 #Ignore IDE files we don't need in the repo.
 /.vs/**/*
 /tgstation/FileContentIndex/**/*
